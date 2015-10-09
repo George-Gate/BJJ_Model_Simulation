@@ -23,7 +23,7 @@ psiSCS=psiSCS*sqrt(factorial(N))/sqrt(2)^N;
 
 %% adiabatic evolution (Fix Step)
 dt= 0.001;
-spt=0.00099;     % sample interval
+spt=0.1;     % sample interval
 tmax=200;
 relaxT=20;
 
