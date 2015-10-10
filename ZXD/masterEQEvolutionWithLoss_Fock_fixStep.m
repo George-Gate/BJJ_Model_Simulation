@@ -7,10 +7,10 @@
 N=15;
 J1=4;J2=0;     % J will change from J1 to J2 linearly in time period [0,tmax-relaxT]
 Ec1=-1;Ec2=-1;  % and remain fixed in [tmax-relaxT, tmax]. The same for Ec.
-Omega1=0.0001;
-Omega2=0.0002;
-kappa1=0.0001;
-kappa2=0.0002;
+Omega1=0.002;
+Omega2=0.002;
+kappa1=0.002;
+kappa2=0.002;
 
 %% init operators
 generateFockOperators();
@@ -20,7 +20,7 @@ generateProjectionOperators();
 %% adiabatic evolution of Master Equation (Fix Step)
 dt= 0.001;
 spt=0.1;     % sample interval
-tmax=200;
+tmax=40;
 relaxT=20;
 
 
@@ -77,8 +77,8 @@ while(t<=tmax)
         JList(rCount)=J;
         EcList(rCount)=Ec;
         % plot
-        plotFockState(rho{cur},N,proj);
-        set(gca,'ylim',[0 0.6]);
+        plotFockState(rho{cur},[0 N],nn2k);
+        set(gca,'zlim',[0 0.5]);
         title(['t=',num2str(t,'%7.3f'),...
                '  J=',num2str(J,'%6.3f'),...
                '  Ec=',num2str(Ec,'%6.3f'),...
@@ -92,10 +92,20 @@ while(t<=tmax)
     t=t+dt;
 end
 
+%% Data post-processing & save to file
 finalNorErr=1-trace(rhoList{rCount});
-% save(['mats\noLoss\N=30\(test2)tmax=',num2str(tmax),'  dt=',num2str(dt),'.mat'],...
-%     'N','Dim','nn2k','k2nn','dt','tmax','spt','relaxT',...
-%     'rCount','tList','psiList','JList','EcList','finalNorErr');
+
+% trim records
+tList=tList(1:rCount);
+rhoList=rhoList{1:rCount};
+JList=JList(1:rCount);
+EcList=EcList(1:rCount);
+
+% save to file
+save(['mats\withLoss\test\(MEQ)tmax=',num2str(tmax),'  dt=',num2str(dt),'.mat'],...
+    'N','Dim','nn2k','k2nn','dt','tmax','spt','relaxT','proj','projNOON',...
+    'Omega1','Omega2','kappa1','kappa2',...
+    'rCount','tList','rhoList','JList','EcList','finalNorErr');
 
 
 display(['tmax=',num2str(tmax),'  Finished.']);
