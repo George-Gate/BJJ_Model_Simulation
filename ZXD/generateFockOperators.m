@@ -7,6 +7,28 @@
 %     Dim
 % Required input: (Should be set in workspace before calling this script)
 %     N - maximum number of bosons
+%
+% [Encoding] 
+%-------------------------------------------------------------------------------
+%    [1,0,0,....] -> |0,0>  [0,1,0,...] -> |1,0> ... [0,...,0,1,0,...] -> |N,0>
+%    [0,...,0,1,0,...] -> |0,1>  [0,...,0,1,0,...] -> |1,1> ... [...] -> |N-1,1>
+%       (N+1 leading 0) 
+%    [0,...,0,1,0,...] -> |0,2>  ...    [...] -> |N-2,2>
+%       (2N+1 leading 0)
+%    ......
+%    [0,...,0,1,0,...] -> |0,k>  ...    [...] -> |N-k,k>    
+%       ( k*N+(3k-k^2)/2 leading 0)
+%-------------------------------------------------------------------------------
+% Total Dim: (N+1)*(N+2)/2
+% |n1,n2> --> psi( n2*N+(3*n2-n2^2)/2+n1+1 )=1   (n1+n2<=N)
+%             psi( nn2k(n1+1,n2+1)  )=1
+% psi( k )=1  --> |k2nn(1),k2nn(2)>
+%
+% Under some circumstance, a1 and a2' may not commute. For example, |k,N-k>,
+% if we do a2' first, |k,N-k+1> has N+1 boson which is not included in our
+% numerical representation. But if we do a1 first and then do a2', no error
+% will occur. To avoid such circumstance, try to start the simulation from 
+% N-1 bosons. Or always act annihilation before creation. 
 
 Dim=(N+1)*(N+2)/2;
 a1=spalloc(Dim,Dim,Dim);

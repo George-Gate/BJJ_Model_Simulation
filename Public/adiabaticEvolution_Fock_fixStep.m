@@ -1,5 +1,5 @@
 % Use Fock representation
-% State Encoding: See BJJGroundState_Fock.m
+% State Encoding: See 'generateFockOperators.m'
 %
 %
 %% parameters

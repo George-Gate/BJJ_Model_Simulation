@@ -1,5 +1,5 @@
 % Use Fock representation
-% State Encoding: See BJJGroundState_Fock.m
+% State Encoding: See 'generateFockOperators.m'
 % This script will do 4 things:
 %     1. Call generateFockOperators();
 %     2. Generate a SCS of N bosons
