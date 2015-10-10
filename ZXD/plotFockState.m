@@ -1,8 +1,7 @@
 %Author: George-Gate
 %Date: 2015/10/6
 %Last Modify Date: 2015/10/10
-%
-function P = plotFockState( varargin )
+%--------------------------------------------------------------------------
 %Use built-in function 'bar' to visualize psi.
 %
 %[Usage 1]
@@ -21,7 +20,7 @@ function P = plotFockState( varargin )
 %   proj - Just pass in this cell matrix.
 %   ha   - [Optional] Handle of axis to plot on.
 % Return: The probability distribution that being plot.
-
+function P = plotFockState( varargin )
     % set axis handle
     if (nargin<4)
         ha=gca;
