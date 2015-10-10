@@ -15,11 +15,7 @@ Ec1=0;Ec2=-1;  % and remain fixed in [tmax-relaxT, tmax]. The same for Ec.
 generateFockOperators();
 
 %% generate SCS as initial state
-psiSCS=zeros(Dim,1);
-for i=0:N
-    psiSCS(nn2k(i+1,N-i+1))=sign(J1)^i*1/sqrt(factorial(i)*factorial(N-i));
-end
-psiSCS=psiSCS*sqrt(factorial(N))/sqrt(2)^N;
+psiSCS=makeState('SCS','psi',nn2k,N,Dim,J1);
 
 %displayFockState(k2nn,psiSCS,'|psiSCS> = ');
 %plotFockState(psiSCS,N,nn2k);
