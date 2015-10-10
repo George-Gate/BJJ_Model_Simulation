@@ -55,12 +55,18 @@ function state = makeState( stateName, type, nn2k, varargin )
             % use imaginary time evolution method to get ground state
             dt=10/max(1,abs(minE));
             Udt=sparse(expm(-H*dt));
+            counter=0;
             while(1)
+                counter=counter+1;
                 for i=10/dt:-1:1
                     psi_new=Udt*minPsi;    % evolve dt time
                     psi_new=psi_new/norm(psi_new);   % renormalize
                 end
-                if (1-psi_new'*minPsi < tol)     % check whether reached required precision
+                if (1-psi_new'*minPsi < tol || counter>1000)     % check whether reached required precision
+                    if (counter>1000)
+                        warning(['Can not reach required tolerance, exit because iterate times exceed 1000.',...
+                                 ' Current error: ',num2str(abs(1-psi_new'*minPsi),'%6.2e')]);
+                    end
                     minPsi=psi_new;
                     % make output state pure real
                     minPsi=minPsi*exp(-1i*angle(max(minPsi)));
