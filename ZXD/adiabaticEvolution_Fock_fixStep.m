@@ -3,9 +3,9 @@
 %
 %
 %% parameters
-N=30;
-J1=1;J2=0;     % J will change from J1 to J2 linearly in time period [0,tmax-relaxT]
-Ec1=0;Ec2=-1;  % and remain fixed in [tmax-relaxT, tmax]. The same for Ec.
+N=15;
+J1=20;J2=0;     % J will change from J1 to J2 linearly in time period [0,tmax-relaxT]
+Ec1=-1;Ec2=-1;  % and remain fixed in [tmax-relaxT, tmax]. The same for Ec.
 
 %% init operators
 generateFockOperators();
