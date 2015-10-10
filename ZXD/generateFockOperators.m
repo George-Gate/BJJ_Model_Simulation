@@ -53,3 +53,4 @@ for n1=0:N
         k2nn(2,i)=n2;
     end
 end
+clear n1 n2 i j k;
