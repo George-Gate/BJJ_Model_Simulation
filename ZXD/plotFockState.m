@@ -8,7 +8,7 @@ function P = plotFockState( varargin )
 %         contain exactly N0 bosons.
 %   nn2k - Just pass in this array.
 %   ha   - [Optional] Handle of axis to plot on.
-% Return: The total probability that psi has exactly N0 bosons.
+% Return: The probability distribution that being plot.
 %[Usage 2]
 %  P=plotFockState( rho,N0,proj,ha)
 %   rho - Density matrix size: Dim x Dim
@@ -16,7 +16,7 @@ function P = plotFockState( varargin )
 %         contain exactly N0 bosons.
 %   proj - Just pass in this cell matrix.
 %   ha   - [Optional] Handle of axis to plot on.
-% Return: The total probability that psi has exactly N0 bosons.
+% Return: The probability distribution that being plot.
 
     % set axis handle
     if (nargin<4)
@@ -37,7 +37,7 @@ function P = plotFockState( varargin )
         set(ha,'xlim',[0 N0]);
         xlabel('n_1');
         ylabel(['|c(n_1,',num2str(N0),'-n_1)|^2']);
-        P=sum(abs(psi(Nindex)).^2);
+        P=abs(psi(Nindex)).^2;
     elseif (size(varargin{1},1)==size(varargin{1},2))
     % if the first argument is a density matrix
         rho=varargin{1};
@@ -53,7 +53,7 @@ function P = plotFockState( varargin )
         set(ha,'xlim',[0 N0]);
         xlabel('n_1');
         ylabel(['|c(n_1,',num2str(N0),'-n_1)|^2']);
-        P=sum(proTmp);
+        P=proTmp;
     else
         % The shape of the first argument is invalid.
         error('Syntax error: The shape of the first argument is invalid.');
