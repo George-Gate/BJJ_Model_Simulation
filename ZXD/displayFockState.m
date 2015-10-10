@@ -1,5 +1,15 @@
+%Author: George-Gate
+%Date: 2015/10/6
+%
 function str = displayFockState( k2nn, psi ,tag)
 % Display a fock state in the form |n1,n2>.
+%[Input]
+%  k2nn - Just pass this array.
+%  psi  - The state vector you want to display
+%  tag  - A string that will show before the vector.
+%[Return]
+%  str - A string which is printed to Command Window
+%
     if (nargin==2)
         tag='';
     end

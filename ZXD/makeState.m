@@ -1,3 +1,6 @@
+%Author: George-Gate
+%Date: 2015/10/10
+%
 function state = makeState( stateName, type, nn2k, varargin )
 %Generate required state
 %  stateName - The name of the state, can be one of the following:
@@ -9,6 +12,7 @@ function state = makeState( stateName, type, nn2k, varargin )
 %  nn2k - Just pass this array
 %  varargin - special arguments required by particular state
 %
+%[Syntax]
 %  makeState('SCS','psi',nn2k, N0, Dim, J)
 %  makeState('BJJ Ground','rho',nn2k, N0, Dim, H, tol)
 %       H   - Hamiltonian of the system.

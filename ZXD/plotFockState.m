@@ -1,3 +1,7 @@
+%Author: George-Gate
+%Date: 2015/10/6
+%Last Modify Date: 2015/10/10
+%
 function P = plotFockState( varargin )
 %Use built-in function 'bar' to visualize psi.
 %
