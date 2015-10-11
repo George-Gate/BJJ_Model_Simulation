@@ -10,13 +10,13 @@
 %        equation. This is an adaptive step size program.
 %     4. Save simulation result to mat-file
 %% parameters
-N=15;
-J1=4;J2=0;     % J will change from J1 to J2 linearly in time period [0,tmax-relaxT]
+N=25;
+J1=8;J2=0;     % J will change from J1 to J2 linearly in time period [0,tmax-relaxT]
 Ec1=-1;Ec2=-1;  % and remain fixed in [tmax-relaxT, tmax]. The same for Ec.
-Omega1=0.002;
-Omega2=0.002;
-kappa1=0.002;
-kappa2=0.002;
+Omega1=0.05;
+Omega2=0.05;
+kappa1=0.05;
+kappa2=0.05;
 
 %% init operators
 generateFockOperators();
@@ -26,9 +26,9 @@ generateFockOperators();
 %% adiabatic evolution of Master Equation (Adaptive)
 dt= 1e-5;    % initial step size
 relTol=1e-3; % the maximum relative error at t=tmax
-maxDt=5e-3;  % maximum step size
+maxDt=1e-2;  % maximum step size
 spt=0.1;     % sample interval
-tmax=40;
+tmax=60;
 relaxT=20;
 
 
@@ -39,10 +39,14 @@ tic;
 
 % allocate recorder
 nRecord=ceil(tmax/spt);
-tList=zeros(1,nRecord);
+tList=zeros(nRecord,1);
 rhoList=cell(nRecord,1);
-JList=zeros(1,nRecord);
-EcList=zeros(1,nRecord);
+JList=zeros(nRecord,1);
+EcList=zeros(nRecord,1);
+hCount=0;
+tHistory=zeros(tmax*1e4,1);    % record t, dt and err at each time when 
+dtHistory=zeros(tmax*1e4,1);   % an err is calculated
+errHistory=zeros(tmax*1e4,1);
 
 
 % calc constant operators
@@ -83,17 +87,11 @@ rhoList{rCount}=rho{1};
 JList(rCount)=J1;
 EcList(rCount)=Ec1;
 
-dtList=zeros(100000,1);
-dtTop=1;
-
 t=dt;
 stepCounter=1;
 while(t<=tmax)
     stepCounter=stepCounter-1;
-    
-    dtList(dtTop)=dt;
-    dtTop=dtTop+1;
-    
+  
     % Update J, Ec, H and rho
     J  = calcJ(t);
     Ec = calcEc(t);
@@ -120,6 +118,12 @@ while(t<=tmax)
         err=2*norm(rho{nxt}-rhoTmp,'fro')/norm(rho{nxt},'fro');
         %errRecord=[errRecord,err/dt];dtRecord=[dtRecord,dt];tRecord=[tRecord,t];
         err=err/dt*tmax;
+        % Record history
+        hCount=hCount+1;
+        tHistory(hCount)=t;    % record t, dt and err at each time when 
+        dtHistory(hCount)=dt;   % an err is calculated
+        errHistory(hCount)=err;  % err is the estimated final relative error
+        
         
         % Change step size
         if (err>relTol)       % err exceed tol
@@ -179,7 +183,7 @@ while(t<=tmax)
     end
     
     % record state
-    if (t-tList(rCount)>=spt)
+    if (t-tList(rCount)>=spt || t+dt>tmax)
         rCount=rCount+1;
         tList(rCount)=t;
         rhoList{rCount}=rho{cur};
@@ -210,12 +214,18 @@ tList=tList(1:rCount);
 rhoList=rhoList{1:rCount};
 JList=JList(1:rCount);
 EcList=EcList(1:rCount);
+tHistory=tHistory(1:hCount);   
+dtHistory=dtHistory(1:hCount); 
+errHistory=errHistory(1:hCount);
 
 % save to file
-% save(['mats\withLoss\test\(MEQ)tmax=',num2str(tmax),'  dt=',num2str(dt),'.mat'],...
-%     'N','Dim','nn2k','k2nn','dt','tmax','spt','relaxT',...
-%     'Omega1','Omega2','kappa1','kappa2',...
-%     'rCount','tList','rhoList','JList','EcList','checkPoint','finalNorErr');
+save(['mats\withLoss\test\(MEQ)tmax=',num2str(tmax),...
+      '  k1=',num2str(kappa1,'%6.1e'),'  k2=',num2str(kappa2,'%6.1e'),'  relTol=',num2str(relTol,'%6.0e'),'.mat'],...
+    'N','Dim','nn2k','k2nn',...
+    'tmax','spt','relaxT','relTol','maxDt',...
+    'Omega1','Omega2','kappa1','kappa2',...
+    'rCount','tList','rhoList','JList','EcList','checkPoint',...
+    'hCount','tHistory','dtHistory','errHistory');
 
 
 display(['tmax=',num2str(tmax),'  Finished.']);
