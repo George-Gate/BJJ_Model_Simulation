@@ -97,7 +97,7 @@ finalNorErr=1-trace(rhoList{rCount});
 
 % trim records
 tList=tList(1:rCount);
-rhoList=rhoList{1:rCount};
+%rhoList=rhoList{1:rCount};  % cannot trim a cell array
 JList=JList(1:rCount);
 EcList=EcList(1:rCount);
 
