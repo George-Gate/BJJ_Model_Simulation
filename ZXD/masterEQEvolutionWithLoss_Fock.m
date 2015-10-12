@@ -207,7 +207,6 @@ while(t<=tmax)
 end
 
 %% Data post-processing & save to file
-finalNorErr=1-trace(rhoList{rCount});
 
 % trim records
 tList=tList(1:rCount);
