@@ -33,7 +33,7 @@ relaxT=20;
 tic;
 
 % allocate recorder
-nRecord=ceil(tmax/spt);
+nRecord=ceil(tmax/spt+1);
 tList=zeros(1,nRecord);
 psiList=zeros(Dim,nRecord);
 JList=zeros(1,nRecord);

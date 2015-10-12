@@ -41,7 +41,7 @@ relaxT=20;      % H will not change during the last relaxT time
 tic;
 
 % allocate recorder
-nRecord=ceil(tmax/spt);
+nRecord=ceil(tmax/spt+1);
 tList=zeros(1,nRecord);
 psiList=zeros(Dim,nRecord);
 JList=zeros(1,nRecord);

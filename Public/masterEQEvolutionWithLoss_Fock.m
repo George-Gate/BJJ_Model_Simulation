@@ -38,7 +38,7 @@ relaxT=20;
 tic;
 
 % allocate recorder
-nRecord=ceil(tmax/spt);
+nRecord=ceil(tmax/spt+1);
 tList=zeros(nRecord,1);
 rhoList=cell(nRecord,1);
 JList=zeros(nRecord,1);
