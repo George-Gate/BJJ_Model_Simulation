@@ -4,7 +4,7 @@
 % parameter.
 
 %% Parameters
-N=10;
+N=6;
 J1=0;J2=5;     % J will change from J1 to J2
 Ec1=-1;Ec2=-1; % Ec will change from Ec1 to Ec2, linearly as J changes.
 spCount=3000;   % The total number of sample point
@@ -36,15 +36,26 @@ for i=1:spCount
         exp_n(j,i)=V(:,j)'*particleNum*V(:,j);
         %dev_n(j,i)=V(:,j)'*sqParticleNum*V(:,j)-exp_n(j,i)^2;
     end
+    % display progress
+    if (mod(i,round(spCount/100))==0)
+        display([num2str(i),'/',num2str(spCount)]);
+    end
 end
 
+%% save result
+save(['mats\energySpectrum_maxN=',num2str(N),...
+    ' J1=',num2str(J1),' J2=',num2str(J2),...
+    ' Ec1=',num2str(Ec1),' Ec2=',num2str(Ec2),'.mat'],...
+    'J','Ec','energy','exp_n','N','Dim','spCount');
+
+%% plot
+drawN=N;   % drawN<=N
 % Select the eigen states that have the desired total particle number
 % It is checked that all energy eigen states are also an eigen state of
 % total particle number.
 energyToDraw=energy;
-energyToDraw(round(exp_n)<N)=NaN;
+energyToDraw(round(exp_n)~=drawN)=NaN;
 
-%% plot
 for i=1:Dim
     scatter(J,energyToDraw(i,:),1,'red');
     hold on;
@@ -52,4 +63,4 @@ end
 hold off;box on;
 xlabel('J');
 ylabel('energy');
-title(['Energy Spectrum (N=', num2str(N),' Ec from ', num2str(Ec1) ' to ', num2str(Ec2),')']);
+title(['Energy Spectrum (N=', num2str(drawN),' Ec from ', num2str(Ec(1)) ' to ', num2str(Ec(spCount)),')']);
