@@ -59,5 +59,25 @@ end
 clear standardFile fileList standard sample ha norErr;
 
 %% plot state distribution vs. time
+Nindex=zeros(N+1,1);
+for i=0:N            % find the index of N-boson state
+    Nindex(i+1)=nn2k(i+1,N-i+1);
+end
 % Requirement: psiList, rCount, Nindex
-set(pcolor(abs(psiList([Nindex;1],1:rCount))),'EdgeAlpha',0);
+set(pcolor(abs(psiList([Nindex;1],1:rCount)).^2),'EdgeAlpha',0);
+
+%% show state evolution (for psiList)
+% Requirement: psiList, tList, JList, EcList, devErrList, avgErrList
+%              rCount, N, nn2k
+% Show a movie of the state's time evolution 
+for i=1:rCount
+    plotFockState(psiList(:,i),N,nn2k);
+    set(gca,'ylim',[0 0.6]);
+    title(['t=',num2str(tList(i),'%7.3f'),...
+           '  J=',num2str(JList(i),'%6.3f'),...
+           '  Ec=',num2str(EcList(i),'%6.3f'),...
+           '  |norErr|=',num2str(abs(1-norm(psiList(:,i))^2),'%6.1e'),...
+           '  devErr=',num2str(devErrList(i),'%6.1e'),...
+           '  avgErr=',num2str(avgErrList(i),'%6.1e')]);
+    pause(0.01);
+end
