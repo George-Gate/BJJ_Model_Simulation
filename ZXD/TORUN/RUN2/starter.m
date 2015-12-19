@@ -37,12 +37,15 @@
 % c0x=1, cx0=sqrt(1-0.3^2), cx1=0.3*exp(1i*pi/7);
 %    tmax = [linspace(40,120,41), linspace(140,440,11)];
 %
-
+% [RUN2.8]
+% c0x=1, cx0=exp(1i*pi/5);
+%    tmax = [linspace(40,120,41), linspace(140,440,11)];
+%
 clear;
 
 %% generate task list
 % task parameters
-runName={'RUN2.1','RUN2.2','RUN2.3','RUN2.4','RUN2.5','RUN2.6','RUN2.7'};
+runName={'RUN2.1','RUN2.2','RUN2.3','RUN2.4','RUN2.5','RUN2.6','RUN2.7','RUN2.8'};
 parameterList={struct('c0x',linspace(1,1,100),...                   % RUN2.1
                       'cx0',exp(1i*linspace(0,2*pi,100)),...
                       'cx1',linspace(0,0,100));...
@@ -62,50 +65,53 @@ parameterList={struct('c0x',linspace(1,1,100),...                   % RUN2.1
                       'cx0',sqrt(1-0.3^2)*linspace(1,1,100),...
                       'cx1',0.3*exp(1i*linspace(0,2*pi,100)));...
                struct('c0x',1,'cx0',sqrt(1-0.3^2),'cx1',0.3*exp(1i*pi/7),... % RUN2.7
-                      'tmax',[linspace(40,120,41), linspace(140,440,11)])
+                      'tmax',[linspace(40,120,41), linspace(140,440,11)]);...
+               struct('c0x',1,'cx0',exp(1i*pi/5),'cx1',0,...                % RUN2.8
+                      'tmax',[linspace(40,120,41), linspace(140,440,11)])       
                };
 
 % generate task list
 taskList=cell(1000,1);
 taskCount=0;
 
-% for runID=1:6    % RUN2.1 ~ RUN2.6
-%     % load parameters
-%     c0x=parameterList{runID}.c0x;
-%     cx0=parameterList{runID}.cx0;
-%     cx1=parameterList{runID}.cx1;
-%     % generate task
-%     for i=1:length(c0x)
-%         clear p;
-%         p.taskName=[runName{runID},' (',num2str(i),')'];
-%         p.c0x=c0x(i);
-%         p.cx0=cx0(i);
-%         p.cx1=cx1(i);
-%         p.saveFile=['mats\',runName{runID},'\i=',num2str(i),'.mat'];
-%         
-%         taskCount=taskCount+1;
-%         taskList{taskCount}=p;
-%     end
-% end
+for runID=1:6    % RUN2.1 ~ RUN2.6
+    % load parameters
+    c0x=parameterList{runID}.c0x;
+    cx0=parameterList{runID}.cx0;
+    cx1=parameterList{runID}.cx1;
+    % generate task
+    for i=1:length(c0x)
+        clear p;
+        p.taskName=[runName{runID},' (',num2str(i),')'];
+        p.c0x=c0x(i);
+        p.cx0=cx0(i);
+        p.cx1=cx1(i);
+        p.saveFile=['mats\',runName{runID},'\i=',num2str(i),'.mat'];
+        
+        taskCount=taskCount+1;
+        taskList{taskCount}=p;
+    end
+end
 
-runID=7;      % RUN2.7
-% load parameters
-c0x=parameterList{runID}.c0x;
-cx0=parameterList{runID}.cx0;
-cx1=parameterList{runID}.cx1;
-tmax=parameterList{runID}.tmax;
-% generate task
-for i=1:length(tmax)
-    clear p;
-    p.taskName=[runName{runID},' (',num2str(i),')'];
-    p.c0x=c0x;
-    p.cx0=cx0;
-    p.cx1=cx1;
-    p.tmax=tmax(i);
-    p.saveFile=['mats\',runName{runID},'\i=',num2str(i),'.mat'];
+for runID=7:8    % RUN2.7 ~ RUN2.8
+    % load parameters
+    c0x=parameterList{runID}.c0x;
+    cx0=parameterList{runID}.cx0;
+    cx1=parameterList{runID}.cx1;
+    tmax=parameterList{runID}.tmax;
+    % generate task
+    for i=1:length(tmax)
+        clear p;
+        p.taskName=[runName{runID},' (',num2str(i),')'];
+        p.c0x=c0x;
+        p.cx0=cx0;
+        p.cx1=cx1;
+        p.tmax=tmax(i);
+        p.saveFile=['mats\',runName{runID},'\i=',num2str(i),'.mat'];
 
-    taskCount=taskCount+1;
-    taskList{taskCount}=p;
+        taskCount=taskCount+1;
+        taskList{taskCount}=p;
+    end
 end
 
 %% Set var list to record
@@ -116,8 +122,7 @@ outList={'N','Dim','nn2k','k2nn','c0x','cx0','cx1'...
          'avgErrList','devErrList','finalNorErr'};
 
 %% Run task list
-taskGroupSize=10;
-pGroup=cell(taskGroupSize,1);
+pGroup=cell(round(taskCount/5),1);
 counter=0;
 for i=1:taskCount
     p=taskList{i};
@@ -137,8 +142,8 @@ for i=1:taskCount
         display(['Skip ',p.taskName,' because save file already exist.']);
     end
     
-    % Batch a many tasks at one time 
-    if (counter>=taskGroupSize || i>=taskCount)
+    % Batch many tasks at one time 
+    if (counter>=round((taskCount-i+1)/5) || i>=taskCount)
         display(['Batch task: ',pGroup{1}.taskName,' to ',pGroup{counter}.taskName]);
         batch('groupUnpacker(pGroup,counter,outList);');
         counter=0;
