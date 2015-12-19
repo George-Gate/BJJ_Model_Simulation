@@ -4,7 +4,7 @@
 % parameter.
 
 %% Parameters
-N=6;
+N=10;
 J1=0;J2=5;     % J will change from J1 to J2
 Ec1=-1;Ec2=-1; % Ec will change from Ec1 to Ec2, linearly as J changes.
 spCount=3000;   % The total number of sample point
