@@ -1,3 +1,5 @@
+% The batch will call this function to run simulation for each parameter
+% set
 function groupUnpacker( pGroup, counter, outList )
 
     for i=1:counter

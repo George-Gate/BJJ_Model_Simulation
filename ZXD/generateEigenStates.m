@@ -1,7 +1,9 @@
 % Generate the energy eigen state for current Hamiltonian
 % Only generate eigen state that has total particle number N0
 % Result save in V and D
-% 
+% D(k) is the k-th smallest energy eigen value with total particle number
+% N0, and V(:,k) is the corresponding eigen vector.
+%
 % Requirement:
 %   H - Current Hamiltonian
 %   N0 - The total particle number of the desired eigen state
