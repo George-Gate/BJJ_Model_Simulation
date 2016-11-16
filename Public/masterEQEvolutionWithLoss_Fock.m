@@ -10,8 +10,8 @@
 %        equation. This is an adaptive step size program.
 %     4. Save simulation result to mat-file
 %% parameters
-N=25;
-J1=8;J2=0;     % J will change from J1 to J2 linearly in time period [0,tmax-relaxT]
+N=12;
+J1=1000;J2=0;     % J will change from J1 to J2 linearly in time period [0,tmax-relaxT]
 Ec1=-1;Ec2=-1;  % and remain fixed in [tmax-relaxT, tmax]. The same for Ec.
 Omega1=0.05;
 Omega2=0.05;
@@ -24,12 +24,12 @@ generateFockOperators();
 
 
 %% adiabatic evolution of Master Equation (Adaptive)
-dt= 1e-5;    % initial step size
-relTol=1e-3; % the maximum relative error at t=tmax
+dt= 1e-4;    % initial step size
+relTol=1e-2; % the maximum relative error at t=tmax
 maxDt=1e-2;  % maximum step size
 spt=0.1;     % sample interval
-tmax=60;
-relaxT=20;
+tmax=20;
+relaxT=1;
 
 
 
@@ -96,7 +96,8 @@ while(t<=tmax)
     J  = calcJ(t);
     Ec = calcEc(t);
     O1 = calcO1(J,Ec);
-    drho=calcDrho(O1,rho{cur});
+    %drho=calcDrho(O1,rho{cur});
+    drho=(O1-O2)*rho{cur}-rho{cur}*(O1+O2)+2*kappa1*a1*rho{cur}*a1'+2*kappa2*a2*rho{cur}*a2';
     rho{nxt}=rho{prv}+2*dt*drho;
 
     % Check if need to change step size
@@ -189,16 +190,16 @@ while(t<=tmax)
         rhoList{rCount}=rho{cur};
         JList(rCount)=J;
         EcList(rCount)=Ec;
-        % plot
-        plotFockState(rho{cur},[0 N],nn2k);
-        set(gca,'zlim',[0 0.5]);
-        title(['t=',num2str(t,'%7.3f'),...
-               '  J=',num2str(J,'%6.3f'),...
-               '  Ec=',num2str(Ec,'%6.3f'),...
-               '  dt=',num2str(dt,'%6.1e'),...
-               '  <N>=',num2str(abs(trace((a1'*a1+a2'*a2)*rho{cur})),'%6.2f'),...
-               '  estErr=',num2str(err,'%6.1e')]);
-        pause(0.01);
+%         % plot
+%         plotFockState(rho{cur},[0 N],nn2k);
+%         set(gca,'zlim',[0 0.5]);
+%         title(['t=',num2str(t,'%7.3f'),...
+%                '  J=',num2str(J,'%6.3f'),...
+%                '  Ec=',num2str(Ec,'%6.3f'),...
+%                '  dt=',num2str(dt,'%6.1e'),...
+%                '  <N>=',num2str(abs(trace((a1'*a1+a2'*a2)*rho{cur})),'%6.2f'),...
+%                '  estErr=',num2str(err,'%6.1e')]);
+%         pause(0.01);
     end
 
     % loop pointer

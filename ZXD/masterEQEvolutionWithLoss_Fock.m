@@ -10,13 +10,13 @@
 %        equation. This is an adaptive step size program.
 %     4. Save simulation result to mat-file
 %% parameters
-N=25;
+N=15;
 J1=8;J2=0;     % J will change from J1 to J2 linearly in time period [0,tmax-relaxT]
 Ec1=-1;Ec2=-1;  % and remain fixed in [tmax-relaxT, tmax]. The same for Ec.
-Omega1=0.05;
-Omega2=0.05;
-kappa1=0.05;
-kappa2=0.05;
+Omega1=0.001;
+Omega2=0.001;
+kappa1=0.001;
+kappa2=0.001;
 
 %% init operators
 generateFockOperators();

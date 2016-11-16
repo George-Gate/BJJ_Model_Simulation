@@ -22,10 +22,10 @@
 % N-1 bosons. Or always act annihilation before creation. 
 %
 %% parameters
-J=30;
+J=1000;
 Ec=-1;
-N=25;     % maximum boson number in the space
-N0=25;    % boson number of the ground state
+N=12;     % maximum boson number in the space
+N0=12;    % boson number of the ground state
 
 %% init operators
 generateFockOperators();
@@ -36,6 +36,8 @@ minPsi=makeState('BJJ Ground','psi',nn2k,N0,Dim,H);
 
 psiSCS=makeState('SCS','psi',nn2k,N0,Dim,J);
 display(['Fedelity with SCS=',num2str(abs(minPsi'*psiSCS),5)]);
+
+psiSCS'*H*psiSCS
 
 
 %% plot ground state distribution
