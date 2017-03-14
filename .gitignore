@@ -48,6 +48,4 @@ Temporary Items
 
 *.asv
 *.mat
-ZXD/demo(fast_evolution).mp4
-ZXD/demo(slow_evolution).mp4
-ZXD/demo(verySlow_evolution).mp4
+*.mp4

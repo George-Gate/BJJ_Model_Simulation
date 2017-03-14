@@ -68,13 +68,13 @@ while(t<=tmax)
         JList(rCount)=J;
         EcList(rCount)=Ec;
         % plot
-%         plotFockState(psi{cur},N,nn2k);
-%         set(gca,'ylim',[0 0.6]);
-%         title(['t=',num2str(t,'%7.3f'),...
-%                '  J=',num2str(J,'%6.3f'),...
-%                '  Ec=',num2str(Ec,'%6.3f'),...
-%                '  norErr=',num2str(1-psi{cur}'*psi{cur},'%6.3f')]);
-%         pause(0.01);
+        plotFockState(psi{cur},N,nn2k);
+        set(gca,'ylim',[0 0.6]);
+        title(['t=',num2str(t,'%7.3f'),...
+               '  J=',num2str(J,'%6.3f'),...
+               '  Ec=',num2str(Ec,'%6.3f'),...
+               '  norErr=',num2str(1-psi{cur}'*psi{cur},'%6.3f')]);
+        pause(0.01);
     end
     
     % loop pointer

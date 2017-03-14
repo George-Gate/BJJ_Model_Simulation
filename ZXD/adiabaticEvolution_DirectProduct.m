@@ -1,21 +1,67 @@
-% Use Fock representation
-% State Encoding: See 'generateFockOperators.m'
+%Author: George-Gate
+%Date: 2016/11/16
+%Last Modify Date: 2016/11/17
+%--------------------------------------------------------------------------
+% Use Direct Product representation
+%
+% [State Encoding] 
+%      Consider N spin-1/2 bosons, there are two DOFs: spin DOF and spatial
+%  DOF. So the state of one boson can be expressed as 
+%                  psi_single=kron(psi_s, psi_x)                    (1)
+%  where psi_s is the 2-dim vector represents the spin state and psi_x is
+%  a M-dim vector represents the spatial state of the boson.
+%      The state for N bosons is
+%
+%       psi=kron(psi_1,kron(psi_2,kron(psi_3,... kron(psi_(N-1),psi_N)))...)
+%
+%  where psi_k is the single particle state in (1) for the k-th boson.
+%
+%
 % This script will do 4 things:
-%     1. Call generateFockOperators();
+%     1. Generate necessary operators
 %     2. Generate a SCS of N bosons
 %     3. Perform an adiabatic evolution with no particle loss
 %     4. Save simulation result to mat-file
 %
 %% parameters
-N=30;
+N=3;M=4;
 J1=1;J2=0;     % J will change from J1 to J2 linearly in time period [0,tmax-relaxT]
 Ec1=0;Ec2=-1;  % and remain fixed in [tmax-relaxT, tmax]. The same for Ec.
 
-%% init operators
-generateFockOperators();
+Dim=(2*M)^N;   % The dimension of the state of N bosons
+
+%% constant operators
+sigma_x=[0,  1; 1, 0];    % pauli matrices
+sigma_y=[0,-1i;1i, 0];
+sigma_z=[1,  0; 0,-1];
+I_s0=[1,0;0,1];           % Identity operator for single particle spin DOF
+I_x0=diag(ones(M,1));     % Identity operator for single particle spatial DOF
+sx0=kron(sigma_x/2,I_x0); % spin operators for single spin-1/2, do nothing on the spatial DOF
+sz0=kron(sigma_z/2,I_x0);
+I0=kron(I_s0,I_x0);       % Identity operator for single particle
+% generate culmulative spin operator Sx=sx1+sx2+sx3+...+sxN
+IN=1;
+Sx=sx0;
+Sz=sz0;
+for i=2:N
+    IN=sparse(kron(I0,IN));
+    Sx=sparse(kron(Sx,I0)+kron(IN,sx0));
+    Sz=sparse(kron(Sz,I0)+kron(IN,sz0));
+end
+clear IN;
+Sz_2=Sz*Sz;
 
 %% generate SCS as initial state
-psiSCS=makeState('SCS','psi',nn2k,N,Dim,J1);
+psi_s0=[1;sign(J1)]/sqrt(2);     % spin state for single boson, J1 should not be zero
+psi_x0=zeros(M,1);psi_x0(1)=1;   % spatial state for single boson
+psi0=kron(psi_s0,psi_x0);        % state for single boson
+psiSCS=psi0;
+for i=2:N
+    psiSCS=sparse(kron(psi0,psiSCS));
+end
+
+[~,SCSbase]=plotSpinState(psiSCS,N,M,[]);
+pause(0.01);
 
 %displayFockState(k2nn,psiSCS,'|psiSCS> = ');
 %plotFockState(psiSCS,N,nn2k);
@@ -32,7 +78,7 @@ hisLen=16;       % Length of history for psi. When step size need to change,
                 % step size.
 q=0.99;       % common ratio of mean value calculation, see OneNote
 spt=0.1;        % sample interval
-tmax=600;
+tmax=60;
 relaxT=20;      % H will not change during the last relaxT time
 
 
@@ -66,9 +112,7 @@ tHis=(tmax+1)*ones(hisLen,1); % To record the time stamp of psi{i}.
                               % if psi{i} is invalid, tHis(i)=tmax+1.
 
 % init psi
-H1=sparse(a1'*a2+a2'*a1);
-H2=sparse((a2'*a2-a1'*a1)^2);
-H=sparse(-J1*H1+Ec1/8*H2);
+H=sparse(-2*sqrt(2)*J1*Sx+Ec1/2*Sz_2);
 psi{1}=psiSCS;
 psi{2}=psiSCS-1i*H*dt*psiSCS;
 tHis(1)=0;
@@ -103,7 +147,7 @@ while(t<=tmax)
     % Update J, Ec and H
     J = (J1+(J2-J1)*t/(tmax-relaxT))*(t<tmax-relaxT)+J2*(t>=tmax-relaxT);
     Ec= (Ec1+(Ec2-Ec1)*t/(tmax-relaxT))*(t<tmax-relaxT)+Ec2*(t>=tmax-relaxT);
-    H=sparse(-J*H1+Ec/8*H2);
+    H=sparse(-2*sqrt(2)*J*Sx+Ec/2*Sz_2);
     % Try to run one step using current dt
     psi{nxt}=psi{prv}-2i*H*dt*psi{cur};
     tHis(nxt)=t+dt;
@@ -204,8 +248,7 @@ while(t<=tmax)
         avgErrList(rCount)=avgErr(cur);
         devErrList(rCount)=devErr(cur);
         % plot
-        plotFockState(psi{cur},N,nn2k);
-        set(gca,'ylim',[0 0.6]);
+        [~,SCSbase]=plotSpinState(psi{cur},N,M,SCSbase,gca);
         title(['t=',num2str(t,'%7.3f'),...
                '  J=',num2str(J,'%6.3f'),...
                '  Ec=',num2str(Ec,'%6.3f'),...
@@ -214,6 +257,7 @@ while(t<=tmax)
                '  avgErr=',num2str(avgErr(cur),'%6.1e'),...
                '  dt=',num2str(dt,'%6.1e')]);
         pause(0.01);
+        % end of plot
     end
     
     % Loop pointer and t
@@ -235,13 +279,25 @@ avgErrList=avgErrList(1:rCount);
 devErrList=devErrList(1:rCount);
 
 % save to file
-save(['mats\noLoss\test\tmax=',num2str(tmax),' avgTol=',num2str(avgTol,'%7.1e'),...
-      ' devTol=',num2str(devTol,'%7.1e'),'.mat'],...
-    'N','Dim','nn2k','k2nn',...
+if (~exist('mats\dProduct','dir'))
+    mkdir('mats\dProduct');
+end
+save(['mats\dProduct\tmax=',num2str(tmax),' N=',num2str(N),...
+      ' M=',num2str(M),'.mat'],...
+    'N','Dim','M','Sx','Sz',...
     'avgTol','devTol','hisLen','q',...
     'tmax','spt','relaxT',...
     'rCount','tList','psiList','JList','EcList',...
     'avgErrList','devErrList','finalNorErr');
+%%
+% final plot 
+figure('name',['Result Snapshot(tmax=',num2str(tmax),'  N=',num2str(N),')'],'position',[50 100 1080 400]);
+subplot(1,2,1);
+[~,SCSbase]=plotSpinState(psiSCS,N,M,SCSbase,gca);
+title('Initial State');
+subplot(1,2,2);
+[~,SCSbase]=plotSpinState(psiList(:,rCount),N,M,SCSbase,gca);
+title('Final State');
 
 display(['tmax=',num2str(tmax),'  Finished.']);
 % end of parameter sweep
