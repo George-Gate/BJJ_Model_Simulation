@@ -1,17 +1,29 @@
+%Author: George-Gate
+%Date: 2016/11/16
+%Last Modify Date: 2016/11/16
+%--------------------------------------------------------------------------
 % Save simulation result as a movie
 % [Required Variables]
 %  rCount, psiList, tList, JList, EcList, avgErrList, devErrList
-%  spt
+%  spt, N, nn2k
 % [Input]
 %  filename
 %
 %
 %%
-% create a movie writer
-filename='demo(verySlow_evolution).mp4';
-videoObj=VideoWriter(filename,'MPEG-4');
-videoObj.FrameRate=15*max(1,floor(1/spt));
-videoObj.open();
+previewMode=false;
+% plotter
+%plotter=@(psi)plotFockState(psi,N,nn2k);
+[~,SCSbase]=plotSpinState(psiList(:,1),N,M,[]);
+plotter=@(psi)plotSpinState(psi,N,M,SCSbase);
+
+if (~previewMode)
+    % create a movie writer
+    filename='tmax=60 N=5 M=4.mp4';
+    videoObj=VideoWriter(filename,'MPEG-4');
+    videoObj.FrameRate=15*max(1,floor(1/spt));
+    videoObj.open();
+end
 
 for i=1:rCount
     % load pars
@@ -21,8 +33,8 @@ for i=1:rCount
     avgErr=avgErrList(i);
     devErr=devErrList(i);
     % plot
-    plotFockState(psiList(:,i),N,nn2k);
-    set(gca,'ylim',[0 0.6]);
+    plotter(psiList(:,i));
+    %set(gca,'ylim',[0 0.6]);
     title(['t=',num2str(t,'%7.1f'),...
            '  J=',num2str(J,'%6.2f'),...
            '  Ec=',num2str(Ec,'%6.2f'),...
@@ -30,8 +42,11 @@ for i=1:rCount
            '  devErr=',num2str(devErr,'%6.1e'),...
            '  avgErr=',num2str(avgErr,'%6.1e')]);
     pause(0.01);
-    % write to file
-    videoObj.writeVideo(getframe(gcf));
+    if (~previewMode)
+        % write to file
+        videoObj.writeVideo(getframe(gcf));
+    end
 end
-
-videoObj.close();
+if (~previewMode)
+    videoObj.close();
+end
